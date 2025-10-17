@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'News Bangladesh'),
 
     /*
     |--------------------------------------------------------------------------
@@ -104,6 +104,11 @@ return [
             explode(',', (string) env('APP_PREVIOUS_KEYS', ''))
         ),
     ],
+
+    'providers' => [
+            App\Providers\GlobalConfigServiceProvider::class,
+    ],
+
 
     /*
     |--------------------------------------------------------------------------
