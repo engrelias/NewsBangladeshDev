@@ -105,9 +105,9 @@ return [
         ),
     ],
 
-    'providers' => [
-            App\Providers\GlobalConfigServiceProvider::class,
-    ],
+    // 'providers' => [
+    //         App\Providers\GlobalConfigServiceProvider::class,
+    // ],
 
 
     /*

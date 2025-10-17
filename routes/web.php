@@ -4,15 +4,10 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\frontend\HomePageController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\UserController;
 
-
-
-
-Route::get('/',function(){
-    return view('frontend.home');
-});
 
 
 Route::get('/dashboard', function () {
@@ -85,14 +80,12 @@ Route::middleware(['auth','role'])->prefix('admin')->group(function () {
 
 
 // frontend routes
-
-
-Route::controller(\App\Http\Controllers\frontend\HomePageController::class)->group(function(){
+Route::controller(HomePageController::class)->group(function(){
     Route::get('/', 'index')->name('home');
     Route::get('/tranding-news', 'trandingNews')->name('tranding.news');
     Route::get('/saradesh-news', 'saradeshNews')->name('saradesh.news');
     Route::get('/national-news', 'nationalNews')->name('national.news');
-    Route::get('/politics-news', 'politicsNews')->name('politics.news');
+    Route::get('/politics-news', 'politiesNews')->name('politics.news');
     Route::get('/international-news', 'internationalNews')->name('international.news');
     Route::get('/business-news', 'businessNews')->name('business.news');
     Route::get('video-news', 'videoNews')->name('video.news');

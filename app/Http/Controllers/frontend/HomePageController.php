@@ -11,6 +11,12 @@ class HomePageController extends Controller
 {
 
 
+public function index()
+{
+    // return your homepage view
+    return view('frontend.home'); 
+}
+
 
 //tranding news method start
 
@@ -82,11 +88,6 @@ public function saradeshNews(){
         ->orderBy('created_at', 'desc')
         ->take(10)
         ->get();
-
-
-
-     
-
 
         return view('frontend.components.national', compact('data'));
 
