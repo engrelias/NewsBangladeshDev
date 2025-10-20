@@ -16,7 +16,7 @@ class Roleseeder extends Seeder
         $role = [
 
                [ 
-                    'role_title' => 'Admin',
+                    'role_title' => 'Admin New',
                     'role_description' => 'all access',
                     'role_order' => 1,
                     'role_status' => 1, 

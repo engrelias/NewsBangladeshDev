@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class HomePageSection extends Model
 {
     protected $fillable = [
-        'section_name',
+         'section_name',
          'section_title',
          'section_style',
          'section_image',

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CategoryStoreRequest;
+use App\Http\Requests\CategoryUpdateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
@@ -27,7 +29,7 @@ class CategoryController extends Controller
     public function create()
     {
         $lang = Language::select('id','lang_title','lang_code')->get();
-        $categories = Category::select('id','category_name')->where('category_status',1)->where('category_parent', 0)->get();
+        $categories = Category::select('id','category_name')->active()->where('category_parent', 0)->get();
         return view('admin.categories.create', compact('lang', 'categories'));
     }
 
@@ -36,26 +38,8 @@ class CategoryController extends Controller
     // Store a newly created resource in storage.
 
 
-    public function store(Request $request)
+    public function store(CategoryStoreRequest $request)
     {
-
-
-        $request->validate([
-            'category_name' => 'required|string|max:255',
-            'category_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'is_menu' => 'sometimes|boolean',
-            'is_mobile_menu' => 'sometimes|boolean',
-            'lang_code' => 'required',
-            'category_status' => 'required',
-            'category_icon' => 'nullable|string|max:255',
-            'category_order' => 'nullable|integer',
-            'meta_title' => 'nullable|string|max:255',
-            'meta_description' => 'nullable|string|max:500',
-            'meta_keywords' => 'nullable|string|max:255',
-        ]);
-
-
-        // Handle file upload if exists
         $imagePath = null;
         if ($request->hasFile('category_img')) {
             $imagePath = $request->file('category_img')->store('categories', 'public');
@@ -83,7 +67,7 @@ class CategoryController extends Controller
         ]);
 
 
-        return redirect()->route('categories.index')->with('success', 'Category created successfully.');
+        return to_route('categories.index')->with('success', 'Category created successfully.');
     }
 
 
@@ -91,10 +75,20 @@ class CategoryController extends Controller
 
     public function show($id)
     {
-        $category = Category::findOrFail($id);
-        return view('admin.categories.show', compact('category'));
+        try {
+            $category = Category::with(['lang', 'user'])->findOrFail($id);
+            
+            return response()->json([
+                'success' => true,
+                'data' => $category
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Category not found'
+            ], 404);
+        }
     }
-
 
     // Show the form for editing the specified resource.
 
@@ -111,29 +105,14 @@ class CategoryController extends Controller
 
     // Update the specified resource in storage.
 
-    public function update(Request $request, $id)
+    public function update(CategoryUpdateRequest $request, $id)
     {
-
-        $request->validate([
-            'category_name' => 'required|string|max:255',
-            'category_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'is_menu' => 'sometimes|boolean',
-            'is_mobile_menu' => 'sometimes|boolean',
-            'lang_code' => 'required',
-            'category_status' => 'required',
-            'category_icon' => 'nullable|string|max:255',
-            'category_order' => 'nullable|integer',
-            'meta_title' => 'nullable|string|max:255',
-            'meta_description' => 'nullable|string|max:500',
-            'meta_keywords' => 'nullable|string|max:255',
-        ]);
 
         $category = Category::findOrFail($id);
 
 
         // Handle file upload if exists
         if ($request->hasFile('category_img')) {
-
             // Delete old image if exists
             if ($category->category_img) {
                 Storage::disk('public')->delete($category->category_img);
@@ -163,7 +142,7 @@ class CategoryController extends Controller
             'user_id' => Auth::user()->id,
         ]);
 
-        return redirect()->route('categories.index')->with('success', 'Category updated successfully.');
+        return to_route('categories.index')->with('success', 'Category updated successfully.');
     }
 
 

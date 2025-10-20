@@ -7,6 +7,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\frontend\HomePageController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\HomePageSectionController;
 
 
 
@@ -35,7 +36,19 @@ Route::middleware(['auth','role'])->prefix('admin')->group(function () {
 
 
     // Category Routes
-    Route::resource('categories', CategoryController::class);
+    Route::resource('categories', CategoryController::class, [
+        'names' => [
+            'index' => 'categories.index',
+            'create' => 'categories.create',
+            'store' => 'categories.store',
+            'show' => 'categories.show',
+            'edit' => 'categories.edit',
+            'update' => 'categories.update',
+            'destroy' => 'categories.destroy',
+        ]
+    ])->except(['show']); // Remove the show from resource
+
+    Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
 
     // News Routes
     Route::resource('news', NewsController::class);
@@ -60,7 +73,7 @@ Route::middleware(['auth','role'])->prefix('admin')->group(function () {
 
     //home page section routes
 
-    Route::resource('homepage-section', \App\Http\Controllers\HomePageSectionController::class)->names([
+    Route::resource('homepage-section', HomePageSectionController::class)->names([
         'index' => 'admin.homepage',
         'create' => 'admin.homepage.create',
         'store' => 'admin.homepage.store',
