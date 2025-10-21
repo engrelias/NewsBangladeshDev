@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\HomePageStoreSectionRequest;
 use App\Models\Language;
 use App\Models\Category;
 use App\Models\HomePageSection;
+use App\Services\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -35,21 +37,8 @@ class HomePageSectionController extends Controller
 
 
     // store a newly created resource in storage
-    public function store(Request $request)
+    public function store(HomePageStoreSectionRequest $request)
     {
-        $request->validate([
-            'section_name' => 'required',
-            'section_title' => 'required',
-            'section_categories' => 'required',
-            'section_description' => 'nullable|string|max:2000',
-            'ad_url' => 'nullable',
-            'ad_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'ad_url2' => 'nullable',
-            'ad_image2' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'is_active' => 'sometimes|boolean',         
-        ]);
-
-
 
         $homePageSection = new HomePageSection();
         $homePageSection->section_name = $request->section_name;
@@ -59,42 +48,32 @@ class HomePageSectionController extends Controller
         $homePageSection->is_active = $request->has('is_active') ? 1 : 0;
         $homePageSection->lang_code = $request->lang_code;
         $homePageSection->section_categories = $request->section_categories ?? 1;
-
         $homePageSection->display_by = Auth::id();
         $homePageSection->parent_section = Auth::id();
 
+        // Ad details
         $homePageSection->ad_url = $request->ad_url;
         $homePageSection->ad_code = $request->ad_code;
         $homePageSection->ad_type = $request->ad_type;
-
         $homePageSection->ad_url2 = $request->ad_url2;
         $homePageSection->ad_code2 = $request->ad_code2;
         $homePageSection->ad_type2 = $request->ad_type2;
 
-        // Handle section_image upload
-
-
-
-        // Handle ad_image upload
-        if ($request->hasFile('section_image')) {
-            $section_image = $request->file('section_image')->store('homePage', 'public');
-        }
-
-        if ($request->hasFile('ad_image')) {
-            $ad_image = $request->file('ad_image')->store('homePage', 'public');
-        }
-
-        if ($request->hasFile('ad_image2')) {
-            $ad_image2 = $request->file('ad_image2')->store('homePage', 'public');
-        }
         
+        if ($request->filled('section_image') || $request->filled('ad_image') || $request->filled('ad_image2')) 
+        {
+            Service::imageUpload($request->file('section_image'), 'homePage');
+            Service::imageUpload($request->file('ad_image'), 'homePage');
+            Service::imageUpload($request->file('ad_image2'), 'homePage');
+        }
+
             
-        $homePageSection->section_image = $section_image ?? null;
-        $homePageSection->ad_image = $ad_image ?? null;
-        $homePageSection->ad_image2 = $ad_image2 ?? null;
+        $homePageSection->section_image = $imagePath ?? null;
+        $homePageSection->ad_image = $imagePath ?? null;
+        $homePageSection->ad_image2 = $imagePath ?? null;
         $homePageSection->save();
 
-        return redirect()->route('admin.homepage')->with('success', 'Home Page Section created successfully.');
+        return to_route('admin.homepage')->with('success', 'Home Page Section created successfully.');
 
     }
 

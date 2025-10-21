@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Category;
 use App\Models\Language;
+use App\Services\Service;
 use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
@@ -40,11 +41,8 @@ class CategoryController extends Controller
 
     public function store(CategoryStoreRequest $request)
     {
-        $imagePath = null;
-        if ($request->hasFile('category_img')) {
-            $imagePath = $request->file('category_img')->store('categories', 'public');
-        }
 
+        $imagePath = Service::imageUpload($request->file('category_img'), 'categories');
         $parent_lang = Category::where('id', $request->category_parent)->value('lang_code');
 
         // Create new category

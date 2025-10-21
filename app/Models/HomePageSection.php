@@ -25,7 +25,8 @@ class HomePageSection extends Model
          'parent_section',
          'lang_code',
          'section_categories',
-         'display_by'
+         'display_by',
+         
     ];
 
     public function categories()
