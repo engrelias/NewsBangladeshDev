@@ -51,7 +51,15 @@ Route::middleware(['auth','role'])->prefix('admin')->group(function () {
     Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
 
     // News Routes
-    Route::resource('news', NewsController::class);
+    Route::resource('news', NewsController::class)->names([
+        'index' => 'news.index',
+        'create' => 'news.create',
+        'store' => 'news.store',
+        'show' => 'news.show',
+        'edit' => 'news.edit',
+        'update' => 'news.update',
+        'destroy' => 'news.destroy',
+    ]);
 
 
     // admin profile routes

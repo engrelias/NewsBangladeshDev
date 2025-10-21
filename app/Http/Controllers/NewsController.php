@@ -44,8 +44,8 @@ class NewsController extends Controller
     // Display a listing of the resource.
     public function index()
     {
-       $newsItems = News::latest()->get(); // Fetch all news items
-       return view('admin.news.index', compact('newsItems')); // Return a view with the
+       $newsItems = News::with([ 'user', 'categories'])->latest()->get(); 
+       return view('admin.news.index', compact('newsItems')); 
     }
 
 
@@ -164,7 +164,7 @@ class NewsController extends Controller
 
         $news->incrementViews();
 
-        return view('admin.news.show', compact('news'));
+        return view('admin.news.view', compact('news'));
     }
 
 

@@ -19,7 +19,7 @@ class CategoryController extends Controller
     // Display a listing of the resource.
     public function index()
     {
-        $categories = Category::all();
+        $categories = Category::with(['lang', 'user','news'])->get();
         return view('admin.categories.index', compact('categories'));
     }
 
